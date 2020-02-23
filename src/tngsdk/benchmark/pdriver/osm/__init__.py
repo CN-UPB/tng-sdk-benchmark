@@ -56,8 +56,7 @@ class OsmDriver(object):
     """
 
     def __init__(self, args, config):
-        self.main_vm_data_ip_1 = None
-        self.main_vm_data_ip_2 = None
+
         self.args = args
         self.config = config
         self.conn_mgr = OSMConnectionManager(self.config)
@@ -89,6 +88,11 @@ class OsmDriver(object):
         #     pass
 
     def setup_experiment(self, ec):
+
+        # Reset main vnf IP addresses
+        self.main_vm_data_ip_1 = None
+        self.main_vm_data_ip_2 = None
+
         # Uplaod VNFD package
         try:
             self.vnfd_id = self.conn_mgr.upload_vnfd_package(ec.vnfd_package_path)
