@@ -33,9 +33,11 @@
 
 import unittest
 import logging
-# import pdb
+from mock import Mock
+import shutil
+import os
 import tngsdk.benchmark.tests.test_osm_pdriver.test_data as TD
-
+from unittest.mock import patch
 from tngsdk.benchmark.generator.osm \
     import OSMServiceConfigurationGenerator
 
@@ -43,7 +45,14 @@ from tngsdk.benchmark.generator.osm \
 Use args from TC1
 """
 
-gen = OSMServiceConfigurationGenerator(TD.args)
+"""
+@nsd_pkg_path - '/home/avi/tng-sdk-benchmark/examples-osm/peds/\
+    ../services/example-ns-1vnf-any/example_ns.tar.gz'
+@vnfd_pkg_path - '/home/avi/tng-sdk-benchmark/examples-osm/peds/\
+    ../services/example-ns-1vnf-any/example_vnf.tar.gz'
+@func_ex -
+@service_ex - service experiment configuration object
+"""
 
 
 class TestOSMServiceConfigurationGenerator(unittest.TestCase):
@@ -54,7 +63,15 @@ class TestOSMServiceConfigurationGenerator(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        pass
+        """
+        cp fixture to tmp
+        """
+        file = 'src/tngsdk/benchmark/tests/test_osm_pdriver/fixtures/example_vnf_00000_vnfd.tar.gz'
+        source = os.path.join(os.getcwd(), file)
+        destination = "/tmp/tmp3c4i29uk/example_vnf_00000_vnfd.tar.gz"
+        os.system("echo 'pg@upb123' | sudo -S mkdir /tmp/tmp3c4i29uk/")
+        shutil.copyfile(source, destination)
+        print('file copied to /tmp location')
 
     def setUp(self):
         pass
@@ -62,13 +79,43 @@ class TestOSMServiceConfigurationGenerator(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_generator_files(self):
+    def test_constructor_instantiation_without_args(self):
         """
-        @nsd_pkg_path - '/home/avi/tng-sdk-benchmark/examples-osm/peds/\
-            ../services/example-ns-1vnf-any/example_ns.tar.gz'
-        @vnfd_pkg_path - '/home/avi/tng-sdk-benchmark/examples-osm/peds/\
-            ../services/example-ns-1vnf-any/example_vnf.tar.gz'
-        @func_ex -
-        @service_ex - service experiment configuration object
+        Test if exception is raised when class is instantiated with false arguments
         """
-        pass
+        with self.assertRaises(TypeError) as cm:
+            OSMServiceConfigurationGenerator()
+        self.assertRegex(cm.exception.args[0], 'args', msg='did not match expected input arguments')
+
+    def test_constructor_instantiation_with_args(self):
+        """
+        """
+        actual = OSMServiceConfigurationGenerator(TD.args)
+        print(actual)
+        self.assertTrue('args' in actual.__dict__)
+
+    def test_generate_without_args(self):
+        """
+        """
+        expected = "missing 4 required positional arguments"
+        actual = OSMServiceConfigurationGenerator(TD.args)
+        with self.assertRaises(TypeError) as cm:
+            gen = actual.generate()
+            print(gen)
+        self.assertRegex(cm.exception.args[0], expected, msg='did not match expected input arguments')
+
+    def test_generator_with_4_args(self):
+        """
+        """
+        osm = OSMServiceConfigurationGenerator(TD.args_obj)
+        # with self.assertRaises(TypeError) as cm:
+        actual = osm.generate(
+            TD.nsd_pkg_path,
+            TD.vnfd_pkg_path,
+            TD.func_ex,
+            TD.service_ex,
+        )
+        print(actual)
+        # self.assertRegex(cm.exception.args[0], expected, msg='did not match expected input arguments')
+        # with self.assertRaises(SomeException):
+        # print(actual)

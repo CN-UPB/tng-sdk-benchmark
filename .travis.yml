@@ -1,21 +1,30 @@
 language: python
+cache: pip
 python:
   - '3.6'
-
+  
 before_install:
   - sudo apt-get -y install libcurl4-gnutls-dev libgnutls-dev
   - pip install -U pip setuptools
-
+  
 install: 
   - python setup.py install
-
+  
 script: 
   # Code style check
+  - PROJECT=backflip
+  - LOCATION=UPB
   - flake8 src
-  
   # Verification-1 - Was installation successfule? 
   - tng-bench --help
-  
   # Unit test would go here
-  - pytest --show-capture all -s -v src/tngsdk/benchmark/tests/test_osm_pdriver
-  # - pytest -v
+  # Run test as sudo as /tmp folder is written
+  - export test_runner=$(which pytest)
+  - echo $test_runner
+  - env | grep test
+  # - pytest -v    
+  # Run tests with code coverage
+  # - sudo -E $test_runner --cov=src/tngsdk/benchmark src/tngsdk/benchmark/tests/test_osm_pdriver
+  # Debug
+  - sudo -E $test_runner --cov=src/tngsdk/benchmark -v -s src/tngsdk/benchmark/tests/test_osm_pdriver
+    

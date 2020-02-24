@@ -43,7 +43,7 @@ def main():
             "--config", ".tng-bench.conf",
             "--no-prometheus",
             # "--no-execution",
-    ]
+            ]
     bench_main(args)
 
 

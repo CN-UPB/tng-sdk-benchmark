@@ -19,9 +19,11 @@ OSM API handling for the '--wait' option
 """
 
 from osmclient.common.exceptions import ClientException
+from tngsdk.benchmark.logger import TangoLogger
 import json
 from time import sleep
 import sys
+LOG = TangoLogger.getLogger(__name__)
 
 # Declare a constant for each module, to allow customizing each timeout in the future
 TIMEOUT_GENERIC_OPERATION = 600
@@ -35,7 +37,7 @@ MAX_DELETE_ATTEMPTS = 3
 
 def _show_detailed_status(old_detailed_status, new_detailed_status):
     if new_detailed_status is not None and new_detailed_status != old_detailed_status:
-        sys.stderr.write("detailed-status: {}\n".format(new_detailed_status))
+        LOG.info("detailed-status: {}".format(new_detailed_status))
         return new_detailed_status
     else:
         return old_detailed_status

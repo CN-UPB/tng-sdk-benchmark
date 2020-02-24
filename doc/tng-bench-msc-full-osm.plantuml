@@ -47,11 +47,12 @@ OSMServiceConfigurationGenerator->OSMServiceConfigurationGenerator:_update_outpu
 OSMServiceConfigurationGenerator->OSMServiceConfigurationGenerator:_update_output_nsd_pkg()
 ProfileManager<--OSMServiceConfigurationGenerator: return func_ex, service_ex
 alt not args.no_display
-ProfileManager->ProfileManager:print_generation_and_packaging_statistics()
+ProfileManager->OSMServiceConfigurationGenerator:print_generation_and_packaging_statistics()
 end
 deactivate ProfileManager
-
-
+alt not args.no_prometheus
+ProfileManager->ProfileManager:start_prometheus_monitoing()
+end
 ProfileManager->ProfileManager:execute_experiments()
 activate ProfileManager
 ProfileManager->Executor:__init__()
@@ -89,15 +90,16 @@ OSMDriver<--OSMConnectionManager:
 OSMDriver->OSMConnectionManager:create_ns()
 OSMDriver<--OSMConnectionManager:
 OSMDriver->OSMDriver: _get_ip_addresses()
-
 Executor<--OSMDriver:
 
 Executor->OSMDriver:execute_experiment
 OSMDriver->OSMDriver:_ssh_connect()
+OSMDriver->OSMDriver: paramiko_obj.exec_command()
 Executor<--OSMDriver:
 
 Executor->OSMDriver:teardown_experiment()
-OSMDriver->OSMDriver:_collect_experiment_results
+OSMDriver->OSMDriver: _wait_experiment()
+OSMDriver->OSMDriver:_collect_experiment_results()
 OSMDriver->OSMConnectionManager:client.ns.delete()
 OSMDriver<--OSMConnectionManager:
 OSMDriver->OSMConnectionManager:client.nsd.delete()
@@ -119,13 +121,13 @@ activate ProfileManager
 ProfileManager->IetfBmwgResultProcessor:__init__()
 activate IetfBmwgResultProcessor
 ProfileManager<--IetfBmwgResultProcessor:return obj
-ProfileManager->VimemuResultProcessor:__init__()
-activate VimemuResultProcessor
-ProfileManager<--VimemuResultProcessor:return obj
+ProfileManager->OSMResultProcessor:__init__()
+activate OSMResultProcessor
+ProfileManager<--OSMResultProcessor:return obj
 ProfileManager->IetfBmwgResultProcessor:run()
 ProfileManager<--IetfBmwgResultProcessor:
-ProfileManager->VimemuResultProcessor:run()
-ProfileManager<--VimemuResultProcessor:
+ProfileManager->OSMResultProcessor:run()
+ProfileManager<--OSMResultProcessor:
 
 deactivate ProfileManager
 ProfileManager->ProfileManager:copy_ped()

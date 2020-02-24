@@ -31,14 +31,11 @@
 # partner consortium (www.5gtango.eu).
 
 
-import unittest
-import logging
-# import pdb
 import tngsdk.benchmark.tests.test_osm_pdriver.test_data as TD
-
+import unittest
 from tngsdk.benchmark import main
 from tngsdk.benchmark import parse_args
-log = logging.getLogger("TestLog")
+# log = logging.getLogger("TestLog")
 
 
 class TestCmdLineArgs(unittest.TestCase):

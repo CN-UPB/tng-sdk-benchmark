@@ -256,7 +256,7 @@ class OSMServiceConfigurationGenerator(
                 max_idx = int(cv.get('member-vnf-index'))
         for mp in service_ex.experiment_configurations[0].experiment.measurement_points:
             mp_name = mp.get('name')
-            # get mp.vm-name->image #we dont need this as of now
+            # get mp.vm-name->image # we dont need this as of now
             # Step 1 : Adding constituent vnfds for probes
             constituent_vnfd.append({"member-vnf-index": max_idx + 1, "vnfd-id-ref": mp_name})
             # Step 2 : Adding probe vnfd connection point reference to vlds
@@ -272,12 +272,46 @@ class OSMServiceConfigurationGenerator(
                     })
                 else:
                     # Data Network
-                    vnfd_connection_point_ref = vld_n.get('vnfd-connection-point-ref')
-                    vnfd_connection_point_ref.append({
-                        'member-vnf-index-ref': max_idx + 1,
-                        'vnfd-connection-point-ref': 'eth0-data',
-                        'vnfd-id-ref': mp_name
-                    })
+                    if "data1" in vld_n.get("id") or "data1" in vld_n.get("name"):
+                        # data1 network: only for INPUT probes and VNF
+                        if "input" in mp_name:  # mp.input
+                            vnfd_connection_point_ref = vld_n.get('vnfd-connection-point-ref')
+                            vnfd_connection_point_ref.append({
+                                'member-vnf-index-ref': max_idx + 1,
+                                'vnfd-connection-point-ref': 'eth0-data',
+                                'vnfd-id-ref': mp_name
+                            })
+                        elif "output" not in mp_name:  # vnf
+                            vnfd_connection_point_ref = vld_n.get('vnfd-connection-point-ref')
+                            vnfd_connection_point_ref.append({
+                                'member-vnf-index-ref': max_idx + 1,
+                                'vnfd-connection-point-ref': 'eth0-data1',
+                                'vnfd-id-ref': mp_name
+                            })
+                    elif "data2" in vld_n.get("id") or "data2" in vld_n.get("name"):
+                        # data2 network: only for OUTPUT probes and VNF
+                        if "output" in mp_name:  # mp.output
+                            vnfd_connection_point_ref = vld_n.get('vnfd-connection-point-ref')
+                            vnfd_connection_point_ref.append({
+                                'member-vnf-index-ref': max_idx + 1,
+                                'vnfd-connection-point-ref': 'eth0-data',
+                                'vnfd-id-ref': mp_name
+                            })
+                        elif "input" not in mp_name:  # vnf
+                            vnfd_connection_point_ref = vld_n.get('vnfd-connection-point-ref')
+                            vnfd_connection_point_ref.append({
+                                'member-vnf-index-ref': max_idx + 1,
+                                'vnfd-connection-point-ref': 'eth0-data2',
+                                'vnfd-id-ref': mp_name
+                            })
+                    else:
+                        # Single data network
+                        vnfd_connection_point_ref = vld_n.get('vnfd-connection-point-ref')
+                        vnfd_connection_point_ref.append({
+                            'member-vnf-index-ref': max_idx + 1,
+                            'vnfd-connection-point-ref': 'eth0-data',
+                            'vnfd-id-ref': mp_name
+                        })
             max_idx = max_idx + 1
 
     def print_generation_and_packaging_statistics(self):

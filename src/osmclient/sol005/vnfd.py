@@ -108,9 +108,11 @@ class Vnfd(object):
         #print 'HTTP CODE: {}'.format(http_code)
         #print 'RESP: {}'.format(resp)
         if http_code == 202:
-            print('Deletion in progress')
+            # print('Deletion in progress')
+            pass
         elif http_code == 204:
-            print('Deleted')
+            # print('Deleted')
+            pass
         else:
             msg = ""
             if resp:

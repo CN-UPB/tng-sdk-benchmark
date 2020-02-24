@@ -105,7 +105,8 @@ class Ns(object):
             else:
                 print('Deletion in progress')
         elif http_code == 204:
-            print('Deleted')
+            # print('Deleted')
+            pass
         else:
             msg = ""
             if resp:

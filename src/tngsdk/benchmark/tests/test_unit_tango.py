@@ -95,7 +95,6 @@ class UnitTangoGeneratorTests(unittest.TestCase):
         g = TangoServiceConfigurationGenerator(args)
         g.generate(TEST_TNG_PKG, None, ex_list)
         # check results
-        # import pdb; pdb.set_trace()
         for ex in ex_list:
             for ec in ex.experiment_configurations:
                 prj_p = ec.project_path
